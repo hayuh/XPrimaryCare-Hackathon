@@ -16,7 +16,14 @@ password = 'Roshi321!'
 warehouse = 'compute_wh'
 database = 'TUVA_PROJECT_DEMO'
 schema = 'TUVA_SYNTHETIC'
-table = 'MEDICAL_CLAIM'
+
+# Query parameters.
+select_attributes = ''
+for i in range(1, 26):
+    select_attributes += f'm.diagnosis_code_{i}, '
+select_attributes += 'm.paid_amount, p.ndc_code'
+from_tables = 'MEDICAL_CLAIM as m, PHARMACY_CLAIM as p'
+where_conditions = 'diagnosis_code_1 is not null and p.ndc_code is not null and m.patient_id = p.patient_id'
 
 # Establish a connection to Snowflake
 conn = snowflake.connector.connect(
@@ -31,7 +38,7 @@ conn = snowflake.connector.connect(
 # Create a cursor to execute SQL queries
 cur = conn.cursor()
 # Query the Snowflake dataset
-query = f"SELECT * FROM {table}"
+query = f"SELECT {select_attributes} FROM {from_tables} WHERE {where_conditions}"
 cur.execute(query)
 # Retrieve the data
 data = cur.fetchall()
