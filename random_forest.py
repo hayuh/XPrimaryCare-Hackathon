@@ -11,12 +11,13 @@ print(df.columns)
 
 # split data into input and taget variable(s)
 
-X = df.drop("PAID_AMOUNT", axis=1) #input variable, everything excluding PAID_AMOUNT
-y = df["PAID_AMOUNT"] #target variable, predict the PAID_AMOUNT
+X = df.drop("NDC_CODE", axis=1) #input variable, everything excluding NDC_CODE
+y = df["NDC_CODE"] #target variable, predict the NDC_CODE
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+#note: consider converting PAID_AMOUNT to FALSE if 0 (rejected claim) and TRUE if greater than 0 (accepted claim)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) #could use StratifiedKFold
 
-model = RandomForestClassifier(n_estimators=100, random_state=42)
+model = RandomForestClassifier(n_estimators=100, random_state=42) #n_estimators = number of trees
 model.fit(X_train, y_train)
 
 y_pred = model.predict(X_test)
