@@ -45,6 +45,16 @@ data = cur.fetchall()
 # Close the cursor and connection
 cur.close()
 conn.close()
+
+
+def preprocess(data):
+    for i, row in enumerate(data):
+        row = row[:-2] + (row[-2] > 0, row[-1])
+        data[i] = row
+    return data
+
+
+data = preprocess(data)
 # Process and use the data in your frontend application
 # Example: Display the data
 for row in data:
