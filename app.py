@@ -6,6 +6,7 @@ import sklearn
 import pandas as pd
 import snowflake.connector
 import gzip
+import json
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
@@ -60,6 +61,8 @@ cur.execute(query)
 diag_codes_sql = cur.fetchall()
 #Convert diagnosis codes into array
 diag_codes = pd.DataFrame(diag_codes_sql).to_numpy().flatten()
+diag_codes = list(diag_codes)
+diag_codes = json.dumps(diag_codes[1:])
 # Close the cursor and connection
 cur.close()
 conn.close()
@@ -130,7 +133,7 @@ print(return_med_prediction(['M25551', 'M79604']))
 @app.route("/", methods = ['GET'])
 def main_page():
   print("Handling request to home page.")
-  return render_template('main.html')
+  return render_template('test.html', diag_codes=diag_codes)
 
 if __name__ == "__main__":
     app.run(debug=True)
