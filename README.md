@@ -5,6 +5,8 @@ Our tool trained a random forest AI model on Tuva claims data. The specific attr
 
 Our tool features a UI that physicians can select the number of patient diagnostic codes they want to enter and then the codes themselves. Once they submit, our tool will output a NDC code recommendation.
 
+To run the tool, git clone this repository. Run "pip install -r requirements.txt" so you have all requirements locally. Run "python app.py" to see the application deployed locally.
+
 Built Using:
 * Flask
 * Bootstrap
