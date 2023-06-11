@@ -25,6 +25,11 @@ select_attributes += 'm.paid_amount, p.ndc_code'
 from_tables = 'MEDICAL_CLAIM as m, PHARMACY_CLAIM as p'
 where_conditions = 'diagnosis_code_1 is not null and p.ndc_code is not null and m.patient_id = p.patient_id'
 
+# TODO: uncomment these lines when the model is added.
+# Getting the model.
+# with open("model_pickle", "rb") as f:
+#   model = pickle.load(f)
+
 # Establish a connection to Snowflake
 conn = snowflake.connector.connect(
     user=user,
@@ -62,6 +67,18 @@ def preprocess(data):
 data = preprocess(data)
 # Process and use the data in your frontend application
 
+
+
+# def return_med_prediction(diagnosis_list):
+#     if len(diagnosis_list) > 25:
+#         raise ValueError('only 25 conditions are allowed')
+#     diagnosis_list_final = []
+#     for i in range(25):
+#         if i < len(diagnosis_list):
+#             diagnosis_list_final.append(diagnosis_list[i])
+#         else:
+#             diagnosis_list.append(None)
+#     return model.predict(diagnosis_list_final + [True])
 
 
 # conn = sqlite3.connect('database.db')
