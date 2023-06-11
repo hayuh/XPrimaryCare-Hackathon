@@ -5,80 +5,103 @@ import pickle
 import sklearn
 import pandas as pd
 import snowflake.connector
+import gzip
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
 
-# Snowflake connection parameters
-account = 'ckb61329.prod3.us-west-2.aws'
-user = 'trentbuckholz'
-password = 'Roshi321!'
-warehouse = 'compute_wh'
-database = 'TUVA_PROJECT_DEMO'
-schema = 'TUVA_SYNTHETIC'
+# # Snowflake connection parameters
+# account = 'ckb61329.prod3.us-west-2.aws'
+# user = 'trentbuckholz'
+# password = 'Roshi321!'
+# warehouse = 'compute_wh'
+# database = 'TUVA_PROJECT_DEMO'
+# schema = 'TUVA_SYNTHETIC'
 
-# Query parameters.
-select_attributes = ''
-for i in range(1, 26):
-    select_attributes += f'm.diagnosis_code_{i}, '
-select_attributes += 'm.paid_amount, p.ndc_code'
-from_tables = 'MEDICAL_CLAIM as m, PHARMACY_CLAIM as p'
-where_conditions = 'diagnosis_code_1 is not null and p.ndc_code is not null and m.patient_id = p.patient_id'
+# # Query parameters.
+# select_attributes = ''
+# for i in range(1, 26):
+#     select_attributes += f'm.diagnosis_code_{i}, '
+# select_attributes += 'm.paid_amount, p.ndc_code'
+# from_tables = 'MEDICAL_CLAIM as m, PHARMACY_CLAIM as p'
+# where_conditions = 'diagnosis_code_1 is not null and p.ndc_code is not null and m.patient_id = p.patient_id'
 
-# TODO: uncomment these lines when the model is added.
+COLUMNS = ['DIAGNOSIS_CODE_1', 'DIAGNOSIS_CODE_2', 'DIAGNOSIS_CODE_3',
+       'DIAGNOSIS_CODE_4', 'DIAGNOSIS_CODE_5', 'DIAGNOSIS_CODE_6',
+       'DIAGNOSIS_CODE_7', 'DIAGNOSIS_CODE_8', 'DIAGNOSIS_CODE_9',
+       'DIAGNOSIS_CODE_10', 'DIAGNOSIS_CODE_11', 'DIAGNOSIS_CODE_12',
+       'DIAGNOSIS_CODE_13', 'DIAGNOSIS_CODE_14', 'DIAGNOSIS_CODE_15',
+       'DIAGNOSIS_CODE_16', 'DIAGNOSIS_CODE_17', 'DIAGNOSIS_CODE_18',
+       'DIAGNOSIS_CODE_19', 'DIAGNOSIS_CODE_20', 'DIAGNOSIS_CODE_21',
+       'DIAGNOSIS_CODE_22', 'DIAGNOSIS_CODE_23', 'DIAGNOSIS_CODE_24',
+       'DIAGNOSIS_CODE_25', 'PAID_AMOUNT']
+
 # Getting the model.
-# with open("model_pickle", "rb") as f:
-#   model = pickle.load(f)
+with gzip.open('model_pickle.gz', 'rb') as f:
+    model = pickle.load(f)
 
-# Establish a connection to Snowflake
-conn = snowflake.connector.connect(
-    user=user,
-    password=password,
-    account=account,
-    warehouse=warehouse,
-    database=database,
-    schema=schema
-)
+with gzip.open('encoder_pickle.gz', 'rb') as f:
+    # Technically this a encoder/decoder since its a bidict
+    encoder = pickle.load(f)
 
-# Create a cursor to execute SQL queries
-cur = conn.cursor()
-# Query the Snowflake dataset
-query = f"SELECT {select_attributes} FROM {from_tables} WHERE {where_conditions}"
-cur.execute(query)
-# Retrieve the data
-data = cur.fetchall()
-# Get the column names
-column_names = [desc[0] for desc in cur.description]
+# # Establish a connection to Snowflake
+# conn = snowflake.connector.connect(
+#     user=user,
+#     password=password,
+#     account=account,
+#     warehouse=warehouse,
+#     database=database,
+#     schema=schema
+# )
 
-# Convert the data to a DataFrame
-df = pd.DataFrame(data, columns=column_names)
-# Close the cursor and connection
-cur.close()
-conn.close()
+# # Create a cursor to execute SQL queries
+# cur = conn.cursor()
+# # Query the Snowflake dataset
+# query = f"SELECT {select_attributes} FROM {from_tables} WHERE {where_conditions}"
+# cur.execute(query)
+# # Retrieve the data
+# data = cur.fetchall()
+# # Get the column names
+# column_names = [desc[0] for desc in cur.description]
 
-
-def preprocess(data):
-    for i, row in enumerate(data):
-        row = row[:-2] + (row[-2] > 0, row[-1])
-        data[i] = row
-    return data
+# # Close the cursor and connection
+# cur.close()
+# conn.close()
 
 
-data = preprocess(data)
-# Process and use the data in your frontend application
+# def preprocess(data):
+#     for i, row in enumerate(data):
+#         row = row[:-2] + (1 if row[-2] > 0 else 0, row[-1])
+#         data[i] = row
+#     return data
 
 
+# data = preprocess(data)
+# # Process and use the data in your frontend application
+# # Convert the data to a DataFrame
+# df = pd.DataFrame(data, columns=column_names)
+# print(df)
 
-# def return_med_prediction(diagnosis_list):
-#     if len(diagnosis_list) > 25:
-#         raise ValueError('only 25 conditions are allowed')
-#     diagnosis_list_final = []
-#     for i in range(25):
-#         if i < len(diagnosis_list):
-#             diagnosis_list_final.append(diagnosis_list[i])
-#         else:
-#             diagnosis_list.append(None)
-#     return model.predict(diagnosis_list_final + [True])
+
+# Honestly this is really ugly but I'm tired. - it works for now.
+# Critique: Its 12:16am and I just realized that I'm representing paid_amount
+# as 0 or 1 (num representation of boolean) however I also have 0 and 1 mapped
+# to strings in the encoder/model...might make a difference might not.
+def return_med_prediction(diagnosis_list):
+    if len(diagnosis_list) > 25:
+        raise ValueError('only 25 conditions are allowed')
+    diagnosis_list_final = []
+    for i in range(25):
+        if i < len(diagnosis_list):
+            # Diagnosis needs to be encoded as int since model can only interpret numbers.
+            diagnosis_list_final.append(encoder[diagnosis_list[i]])
+        else:
+            diagnosis_list_final.append(encoder[None])
+    diagnosis_list_final.append(1)
+    print(diagnosis_list_final)
+    return encoder.inverse[model.predict(pd.DataFrame([diagnosis_list_final], columns=COLUMNS))[0]]
+
+print(return_med_prediction(['M25551', 'M79604']))
 
 
 # conn = sqlite3.connect('database.db')
@@ -99,6 +122,3 @@ data = preprocess(data)
 
 if __name__ == "__main__":
     app.run(debug=True)
-    # Example: Display the data
-    for row in data:
-        print(row)
