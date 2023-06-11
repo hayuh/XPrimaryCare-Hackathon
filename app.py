@@ -112,13 +112,10 @@ print(return_med_prediction(['M25551', 'M79604']))
 # print ("Table created successfully")
 # conn.close()
 
-
-# @app.route("/", methods = ['GET'])
-# def hello():
-#   print("Handling request to home page.")
-#   # TODO: update this to route to our home page
-#   return render_template('')
-
+@app.route("/", methods = ['GET'])
+def main_page():
+  print("Handling request to home page.")
+  return render_template('main.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
