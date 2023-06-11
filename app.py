@@ -138,6 +138,8 @@ def main_page():
     if request.method == 'GET':
         return render_template('main.html', diag_codes=diag_codes)
     elif request.method=='POST':
+        if request.form.get('num_codes') is None:
+            return render_template('main.html', diag_codes=diag_codes)
         num_codes = request.form.get('num_codes')
         submitted_diag_codes = []
         for i in range(0, int(num_codes)):
