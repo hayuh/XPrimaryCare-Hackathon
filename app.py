@@ -42,13 +42,16 @@ query = f"SELECT {select_attributes} FROM {from_tables} WHERE {where_conditions}
 cur.execute(query)
 # Retrieve the data
 data = cur.fetchall()
+# Get the column names
+column_names = [desc[0] for desc in cur.description]
+
+# Convert the data to a DataFrame
+df = pd.DataFrame(data, columns=column_names)
 # Close the cursor and connection
 cur.close()
 conn.close()
 # Process and use the data in your frontend application
-# Example: Display the data
-for row in data:
-    print(row)
+
 
 
 # conn = sqlite3.connect('database.db')
@@ -69,3 +72,6 @@ for row in data:
 
 if __name__ == "__main__":
     app.run(debug=True)
+    # Example: Display the data
+    for row in data:
+        print(row)
