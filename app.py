@@ -10,13 +10,13 @@ import gzip
 app = Flask(__name__)
 app.config["DEBUG"] = True
 
-# # Snowflake connection parameters
-# account = 'ckb61329.prod3.us-west-2.aws'
-# user = 'trentbuckholz'
-# password = 'Roshi321!'
-# warehouse = 'compute_wh'
-# database = 'TUVA_PROJECT_DEMO'
-# schema = 'TUVA_SYNTHETIC'
+# Snowflake connection parameters
+account = 'ckb61329.prod3.us-west-2.aws'
+user = 'trentbuckholz'
+password = 'Roshi321!'
+warehouse = 'compute_wh'
+database = 'TUVA_PROJECT_DEMO'
+schema = 'TUVA_SYNTHETIC'
 
 # # Query parameters.
 # select_attributes = ''
@@ -26,15 +26,15 @@ app.config["DEBUG"] = True
 # from_tables = 'MEDICAL_CLAIM as m, PHARMACY_CLAIM as p'
 # where_conditions = 'diagnosis_code_1 is not null and p.ndc_code is not null and m.patient_id = p.patient_id'
 
-# # Establish a connection to Snowflake
-# conn = snowflake.connector.connect(
-#     user=user,
-#     password=password,
-#     account=account,
-#     warehouse=warehouse,
-#     database=database,
-#     schema=schema
-# )
+# Establish a connection to Snowflake
+conn = snowflake.connector.connect(
+    user=user,
+    password=password,
+    account=account,
+    warehouse=warehouse,
+    database=database,
+    schema=schema
+)
 
 # # Create a cursor to execute SQL queries
 # cur = conn.cursor()
@@ -49,6 +49,20 @@ app.config["DEBUG"] = True
 # # Close the cursor and connection
 # cur.close()
 # conn.close()
+
+# Getting all unique values in diagnostic codes
+# Create a cursor to execute SQL queries
+cur = conn.cursor()
+# Query the Snowflake dataset
+query = f"select distinct diagnosis_code_1 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_2 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_3 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_4 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_5 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_6 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_7 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_8 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_9 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_10 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_11 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_12 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_13 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_14 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_15 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_16 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_17 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_18 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_19 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_20 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_21 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_22 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_23 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_24 from tuva_synthetic.medical_claim UNION ALL select distinct diagnosis_code_25 from tuva_synthetic.medical_claim"
+cur.execute(query)
+# Retrieve the data
+diag_codes_sql = cur.fetchall()
+#Convert diagnosis codes into array
+diag_codes = pd.DataFrame(diag_codes_sql).to_numpy().flatten()
+# Close the cursor and connection
+cur.close()
+conn.close()
 
 COLUMNS = ['DIAGNOSIS_CODE_1', 'DIAGNOSIS_CODE_2', 'DIAGNOSIS_CODE_3',
        'DIAGNOSIS_CODE_4', 'DIAGNOSIS_CODE_5', 'DIAGNOSIS_CODE_6',
