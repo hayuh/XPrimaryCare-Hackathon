@@ -17,6 +17,21 @@
           min-height: 100vh;
         }
       </style>
+    <script>
+      function showInputBoxes() {
+        var selectedValue = document.getElementById("value").value;
+        var inputContainer = document.getElementById("input-container");
+        inputContainer.innerHTML = ""; // Clear any existing input boxes
+  
+        for (var i = 0; i < selectedValue; i++) {
+          var input = document.createElement("input");
+          input.type = "text";
+          input.classList.add("form-control");
+          input.placeholder = "Input Box " + (i + 1);
+          inputContainer.appendChild(input);
+        }
+      }
+    </script>
   </head>
   <body>
     <div class="container dropdown-container">
@@ -26,7 +41,7 @@
             <form>
               <div class="mb-3">
                 <label for="value" class="form-label">Select number of diagnoses</label>
-                <select class="form-select" id="value">
+                <select class="form-select" id="value" onchange="showInputBoxes()">
                   <option disabled selected>Select a value</option>
                     <option value="1">1</option>
                     <option value="2">2</option>
@@ -55,6 +70,7 @@
                     <option value="25">25</option>
                 </select>
               </div>
+              <div id="input-container"></div>
               <button type="submit" class="btn btn-primary">Submit</button>
             </form>
           </div>
