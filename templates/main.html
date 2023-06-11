@@ -18,6 +18,7 @@
         }
       </style>
     <script>
+      //var diag_codes = = JSON.parse("{{ diag_codes }}");
       var diag_codes = ["M25551", "R310", "Z79899", "K5750", "R928", "J441", "Z7901", "I4891", "I509", "Z01812", "J449", "R0600", "R799", "E1122", "I480", "R609", "E785", "E7800", "I2510", "Z981", "J029", "D0359", "I5032", "R9431", "E041", "R404", "F332", "R000", "R0902", "R739", "L603", "M48061", "Z87891", "I214", "H578", "Z043", "J9811", "E038", "M170", "I619", "H43819", "I499", "L309", "Z45010", "K8020", "H2511", "G4733", "R42", "Z79891", "Z6824", "S99919A", "H35373", "J9690", "L578", "I517", "E669", "I6340", "R413", "J209", "J9600", "R110", "M5020", "F3181", "Z9861", "F209", "R197", "E049", "B351", "N390", "C44311", "I10", "H26491", "H35363", "Z1231", "R911", "R0602", "R1011", "N401", "J986", "M1009", "Z0001", "K529", "R0603", "H04123", "I639", "E569", "R1013", "M79672", "E8352", "R21", "R002", "M549", "R4182", "K922", "R55", "Z86010", "Z23", "E119", "R8299", "E875", "E109", "H25043", "R918", "E039", "M179", "M545", "R109", "Z0000", "K2270", "M1611", "I519", "N12", "M1711", "M19072", "N898", 
 "M542", "N359", "Z125", "C4441", "Z87440", "M25552", "R0789", "S065X9A", "Q998", "M94261", "L03116", "J9602", "M899", "N3020", "I5189", "J95821", "C44519", "M4802", "E118", "N950", "H40003", "K432", "E782", "H25013", "Z85828", "D519", "Z85038", "F1120", "I6789", "I5033", "R634", "K635", "I493", "L03032", "H43811", "R069", "K4090", "K436", "J45909", "Z4789", "R3129", "G43119", "N951", "Z1211", "Z01811", "F1020", "J40", "F39", "J432", "G459", "L84", "J310", "Z955", "E890", "L570", "S2242XA", "R52", "M5416", "N486", "M2550", "M1712", "Z98890", "I6529", "Z853", "S20219A", "L820", "J342", "Z8546", "J218", "D259", "R1033", "L900", "E8881", "B20", "F319", "I080", "J301", "L718", "H2513", "I951", "B078", "M40205", "I350", "M25562", "M4316", "D485", "R1310", "I4892", "F0390", "E559", "N183", "D649", "T148", "M9901", "R300", "J189", "R7989", "R102", 
 "E780", "L308", "M5442", "H353112", "R319", "J302", "K810", "M25561", "B029", "K2900", "M25662", "I5031", "Z950", "Z8719", "R0609", "I255", "R030", "H25811", "I2699", "H3532", "H43813", "N3090", "I495", "M069", "N179", "K429", "E784", "I481", "E1165", "Z452", "H6983", "R410", "M25569", "K621", "H2512", "I340", "I219", "L600", "M47817", "R9720", "G8929", "E1142", "I482", "D472", "I447", "L989", "I309", "M47816", "S098XXA", 
@@ -36,7 +37,8 @@
           input.type = "text";
           input.classList.add("form-control");
           input.placeholder = "Enter diagnosis code " + (i + 1);
-          input.addEventListener("input", validateInput); // Add input event listener
+          input.name = "input-box-" + i;
+          //input.addEventListener("input", validateInput); // Add input event listener
 
           // Create datalist for autocomplete options
           var datalist = document.createElement("datalist");
@@ -54,7 +56,7 @@
         }
       }
 
-      function validateInput(event) {
+      /**function validateInput(event) {
         var inputValue = event.target.value;
         var validValues = diag_codes;
         var errorMessage = document.getElementById("error-message");
@@ -66,7 +68,7 @@
           errorMessage.style.display = "none";
           document.getElementById("submit-btn").disabled = false;
         }
-    }
+    }*/
     </script>
   </head>
   <body>
@@ -74,10 +76,10 @@
         <div class="card">
           <div class="card-body">
             <h5 class="card-title">Nextpill</h5>
-            <form>
+            <form action="" method="post">
               <div class="mb-3">
                 <label for="value" class="form-label">Select number of diagnoses</label>
-                <select class="form-select" id="value" onchange="showInputBoxes()">
+                <select class="form-select" id="value" name="num_codes" onchange="showInputBoxes()">
                   <option disabled selected>Select a value</option>
                     <option value="1">1</option>
                     <option value="2">2</option>
