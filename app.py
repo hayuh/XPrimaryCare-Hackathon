@@ -121,7 +121,7 @@ def return_med_prediction(diagnosis_list):
     print(diagnosis_list_final)
     return encoder.inverse[model.predict(pd.DataFrame([diagnosis_list_final], columns=COLUMNS))[0]]
 
-print(return_med_prediction(['M25551', 'M79604']))
+#print(return_med_prediction(['M25551', 'M79604']))
 
 
 # conn = sqlite3.connect('database.db')
@@ -134,17 +134,19 @@ print(return_med_prediction(['M25551', 'M79604']))
 
 @app.route("/", methods = ['GET', 'POST'])
 def main_page():
-  print("Handling request to home page.")
-  if request.method == 'GET':
-    return render_template('main.html', diag_codes=diag_codes)
-  elif request.method=='POST':
-      num_codes = request.form.get('num_codes')
-      submitted_diag_codes = []
-      for i in range(0, int(num_codes)):
-          submitted_diag_codes.append(request.form.get('input-box-' + str(i)))
-      print(num_codes)
-      print(submitted_diag_codes)
-      return render_template('main.html')
+    print("Handling request to home page.")
+    if request.method == 'GET':
+        return render_template('main.html', diag_codes=diag_codes)
+    elif request.method=='POST':
+        num_codes = request.form.get('num_codes')
+        submitted_diag_codes = []
+        for i in range(0, int(num_codes)):
+            submitted_diag_codes.append(request.form.get('input-box-' + str(i)))
+        print(num_codes)
+        print(submitted_diag_codes)
+        pred = return_med_prediction(submitted_diag_codes)
+        print(pred)
+        return render_template('results.html', prediction=pred)
 
 if __name__ == "__main__":
     app.run(debug=True)
