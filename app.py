@@ -26,24 +26,6 @@ app.config["DEBUG"] = True
 # from_tables = 'MEDICAL_CLAIM as m, PHARMACY_CLAIM as p'
 # where_conditions = 'diagnosis_code_1 is not null and p.ndc_code is not null and m.patient_id = p.patient_id'
 
-COLUMNS = ['DIAGNOSIS_CODE_1', 'DIAGNOSIS_CODE_2', 'DIAGNOSIS_CODE_3',
-       'DIAGNOSIS_CODE_4', 'DIAGNOSIS_CODE_5', 'DIAGNOSIS_CODE_6',
-       'DIAGNOSIS_CODE_7', 'DIAGNOSIS_CODE_8', 'DIAGNOSIS_CODE_9',
-       'DIAGNOSIS_CODE_10', 'DIAGNOSIS_CODE_11', 'DIAGNOSIS_CODE_12',
-       'DIAGNOSIS_CODE_13', 'DIAGNOSIS_CODE_14', 'DIAGNOSIS_CODE_15',
-       'DIAGNOSIS_CODE_16', 'DIAGNOSIS_CODE_17', 'DIAGNOSIS_CODE_18',
-       'DIAGNOSIS_CODE_19', 'DIAGNOSIS_CODE_20', 'DIAGNOSIS_CODE_21',
-       'DIAGNOSIS_CODE_22', 'DIAGNOSIS_CODE_23', 'DIAGNOSIS_CODE_24',
-       'DIAGNOSIS_CODE_25', 'PAID_AMOUNT']
-
-# Getting the model.
-with gzip.open('model_pickle.gz', 'rb') as f:
-    model = pickle.load(f)
-
-with gzip.open('encoder_pickle.gz', 'rb') as f:
-    # Technically this a encoder/decoder since its a bidict
-    encoder = pickle.load(f)
-
 # # Establish a connection to Snowflake
 # conn = snowflake.connector.connect(
 #     user=user,
@@ -67,6 +49,25 @@ with gzip.open('encoder_pickle.gz', 'rb') as f:
 # # Close the cursor and connection
 # cur.close()
 # conn.close()
+
+COLUMNS = ['DIAGNOSIS_CODE_1', 'DIAGNOSIS_CODE_2', 'DIAGNOSIS_CODE_3',
+       'DIAGNOSIS_CODE_4', 'DIAGNOSIS_CODE_5', 'DIAGNOSIS_CODE_6',
+       'DIAGNOSIS_CODE_7', 'DIAGNOSIS_CODE_8', 'DIAGNOSIS_CODE_9',
+       'DIAGNOSIS_CODE_10', 'DIAGNOSIS_CODE_11', 'DIAGNOSIS_CODE_12',
+       'DIAGNOSIS_CODE_13', 'DIAGNOSIS_CODE_14', 'DIAGNOSIS_CODE_15',
+       'DIAGNOSIS_CODE_16', 'DIAGNOSIS_CODE_17', 'DIAGNOSIS_CODE_18',
+       'DIAGNOSIS_CODE_19', 'DIAGNOSIS_CODE_20', 'DIAGNOSIS_CODE_21',
+       'DIAGNOSIS_CODE_22', 'DIAGNOSIS_CODE_23', 'DIAGNOSIS_CODE_24',
+       'DIAGNOSIS_CODE_25', 'PAID_AMOUNT']
+
+# Getting the model.
+with gzip.open('model_pickle.gz', 'rb') as f:
+    model = pickle.load(f)
+
+with gzip.open('encoder_pickle.gz', 'rb') as f:
+    # Technically this a encoder/decoder since its a bidict
+    encoder = pickle.load(f)
+
 
 
 # def preprocess(data):

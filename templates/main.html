@@ -27,10 +27,38 @@
           var input = document.createElement("input");
           input.type = "text";
           input.classList.add("form-control");
-          input.placeholder = "Input Box " + (i + 1);
-          inputContainer.appendChild(input);
+          input.placeholder = "Enter diagnosis code " + (i + 1);
+          input.addEventListener("input", validateInput); // Add input event listener
+
+          // Create datalist for autocomplete options
+          var datalist = document.createElement("datalist");
+          datalist.id = "datalist-" + i;
+          var options = ["apple", "orange", "banana", "fruit", "dragon", "carrot", "six", "word"].slice(0, 5); // Get the first 10 options
+          options.forEach(function (option) {
+          var optionElement = document.createElement("option");
+          optionElement.value = option;
+          datalist.appendChild(optionElement);
+        });
+        input.setAttribute("list", "datalist-" + i);
+
+        inputContainer.appendChild(input);
+        inputContainer.appendChild(datalist);
         }
       }
+
+      function validateInput(event) {
+        var inputValue = event.target.value;
+        var validValues = ["apple", "orange", "banana", "fruit", "dragon", "carrot", "six", "word"];
+        var errorMessage = document.getElementById("error-message");
+
+        if (!validValues.includes(inputValue)) {
+          errorMessage.style.display = "block";
+          document.getElementById("submit-btn").disabled = true;
+        } else {
+          errorMessage.style.display = "none";
+          document.getElementById("submit-btn").disabled = false;
+        }
+    }
     </script>
   </head>
   <body>
@@ -71,7 +99,10 @@
                 </select>
               </div>
               <div id="input-container"></div>
-              <button type="submit" class="btn btn-primary">Submit</button>
+              <div class="alert alert-danger mt-3" id="error-message" style="display: none;">
+                Invalid input. Please enter a valid value.
+              </div>
+              <button type="submit" class="btn btn-primary" id="submit-btn">Submit</button>
             </form>
           </div>
         </div>

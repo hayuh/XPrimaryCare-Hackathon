@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dropdown Page</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/css/bootstrap.min.css">
+  <style>
+    /* Center the dropdown container vertically */
+    .dropdown-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+  </style>
+  <script>
+    function showInputBoxes() {
+      var selectedValue = document.getElementById("value").value;
+      var inputContainer = document.getElementById("input-container");
+      inputContainer.innerHTML = ""; // Clear any existing input boxes
+
+      for (var i = 0; i < selectedValue; i++) {
+        var input = document.createElement("input");
+        input.type = "text";
+        input.classList.add("form-control");
+        input.placeholder = "Input Box " + (i + 1);
+        input.addEventListener("input", validateInput); // Add input event listener
+
+        // Create datalist for autocomplete options
+        var datalist = document.createElement("datalist");
+        datalist.id = "datalist-" + i;
+        datalist.innerHTML = `
+          <option value="apple">
+          <option value="orange">
+          <option value="banana">
+        `;
+        input.setAttribute("list", "datalist-" + i);
+
+        inputContainer.appendChild(input);
+        inputContainer.appendChild(datalist);
+      }
+    }
+
+    function validateInput(event) {
+      var inputValue = event.target.value;
+      var validValues = ["apple", "orange", "banana"];
+      var errorMessage = document.getElementById("error-message");
+
+      if (!validValues.includes(inputValue)) {
+        errorMessage.style.display = "block";
+        document.getElementById("submit-btn").disabled = true;
+      } else {
+        errorMessage.style.display = "none";
+        document.getElementById("submit-btn").disabled = false;
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="container dropdown-container">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Select a Value</h5>
+        <form>
+          <div class="mb-3">
+            <label for="value" class="form-label">Value</label>
+            <select class="form-select" id="value" onchange="showInputBoxes()">
+              <option disabled selected>Select a value</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+            </select>
+          </div>
+          <div id="input-container"></div>
+          <div class="alert alert-danger mt-3" id="error-message" style="display: none;">
+            Invalid input. Please enter a valid value.
+          </div>
+          <button type="submit" class="btn btn-primary" id="submit-btn">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
