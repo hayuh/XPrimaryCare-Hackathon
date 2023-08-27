@@ -1,6 +1,9 @@
 import sqlite3
-from flask import Flask, render_template, flash, redirect, url_for, request, jsonify, make_response
 import numpy as np
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 import pickle
 import sklearn
 import pandas as pd
@@ -8,8 +11,13 @@ import snowflake.connector
 import gzip
 import json
 
-app = Flask(__name__)
-app.config["DEBUG"] = True
+app = FastAPI()
+
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+templates = Jinja2Templates(directory="templates")
 
 
 
@@ -140,23 +148,25 @@ def return_med_prediction(diagnosis_list):
 # print ("Table created successfully")
 # conn.close()
 
-@app.route("/", methods = ['GET', 'POST'])
-def main_page():
-    print("Handling request to home page.")
-    if request.method == 'GET':
-        return render_template('main.html', diag_codes=diag_codes)
-    elif request.method=='POST':
-        if request.form.get('num_codes') is None:
-            return render_template('main.html', diag_codes=diag_codes)
-        num_codes = request.form.get('num_codes')
-        submitted_diag_codes = []
-        for i in range(0, int(num_codes)):
-            submitted_diag_codes.append(request.form.get('input-box-' + str(i)))
-        print(num_codes)
-        print(submitted_diag_codes)
-        pred = return_med_prediction(submitted_diag_codes)
-        print(pred)
-        return render_template('results.html', prediction=pred)
+@app.get("/", response_class=HTMLResponse)
+async def get_main_page(request: Request):
+    return templates.TemplateResponse('main.html', {'request': request, 'diag_codes': diag_codes})
+
+
+@app.post("/", response_class=HTMLResponse)
+async def post_main_page(request: Request):
+    if request.form.get('num_codes') is None:
+        return templates.TemplateResponse('main.html', {'request': request, 'diag_codes': diag_codes})
+    num_codes = request.form.get('num_codes')
+    submitted_diag_codes = []
+    for i in range(0, int(num_codes)):
+        submitted_diag_codes.append(request.form.get('input-box-' + str(i)))
+    print(num_codes)
+    print(submitted_diag_codes)
+    pred = return_med_prediction(submitted_diag_codes)
+    print(pred)
+    return templates.TemplateResponse('results.html', {'request': request, 'prediction': pred})
+
 
 if __name__ == "__main__":
     app.run(debug=True)
