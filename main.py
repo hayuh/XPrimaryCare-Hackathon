@@ -155,12 +155,13 @@ async def get_main_page(request: Request):
 
 @app.post("/", response_class=HTMLResponse)
 async def post_main_page(request: Request):
-    if request.form.get('num_codes') is None:
+    form = await request.form()
+    if form.get('num_codes') is None:
         return templates.TemplateResponse('main.html', {'request': request, 'diag_codes': diag_codes})
-    num_codes = request.form.get('num_codes')
+    num_codes = form.get('num_codes')
     submitted_diag_codes = []
     for i in range(0, int(num_codes)):
-        submitted_diag_codes.append(request.form.get('input-box-' + str(i)))
+        submitted_diag_codes.append(form.get('input-box-' + str(i)))
     print(num_codes)
     print(submitted_diag_codes)
     pred = return_med_prediction(submitted_diag_codes)

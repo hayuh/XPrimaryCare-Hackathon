@@ -1,4 +1,4 @@
-from app import df
+from main import df
 
 import numpy as np
 import pandas as pd
