@@ -1,22 +1,21 @@
-from main import df
-
-import numpy as np
-import pandas as pd
-import bidict
-from sklearn.model_selection import StratifiedKFold
-from sklearn import preprocessing
-
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
 import pickle
 
+import bidict
+import get_data_snowflake
+import numpy as np
+import pandas as pd
+from sklearn import preprocessing
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import StratifiedKFold, train_test_split
 
 TARGET_COLUMN_NAME = 'NDC_CODE'
 X_LABELS = [f'DIAGNOSIS_CODE_{i}' for i in range(1, 26)] + ['PAID_AMOUNT']
 
+df = get_data_snowflake.get_claims_data()
+
 df_original = df.copy(deep=True)
-y_original = df_original.loc[:,TARGET_COLUMN_NAME]
+y_original = df_original.loc[:, TARGET_COLUMN_NAME]
 
 # Encode strings as ints because sklearn classifiers can only operate on ints.
 # I would use pd.get_dummies(df) except it uses too much memory and crashes.
@@ -42,8 +41,8 @@ for i in range(len(df)):
 
 print(df)
 
-y = df.loc[:,TARGET_COLUMN_NAME]
-#X = df.drop(TARGET_COLUMN_NAME, axis=1) #input variable, everything excluding NDC_CODE
+y = df.loc[:, TARGET_COLUMN_NAME]
+# X = df.drop(TARGET_COLUMN_NAME, axis=1) #input variable, everything excluding NDC_CODE
 
 # #note: consider converting PAID_AMOUNT to FALSE if 0 (rejected claim) and TRUE if greater than 0 (accepted claim)
 # X_train, X_test, y_train, y_test = train_test_split(X.astype('int'), y.astype('int'), test_size=0.2, random_state=42) #could use StratifiedKFold
@@ -64,7 +63,8 @@ max_accuracy = float('-inf')
 
 model = RandomForestClassifier(n_estimators=100, random_state=seed)
 for train_i, test_i in StratifiedKFold(n_splits=4, shuffle=True, random_state=seed).split(df_original, y_original):
-    train, test = df.loc[train_i,:].astype('int'), df.loc[test_i,:].astype('int')
+    train, test = df.loc[train_i, :].astype(
+        'int'), df.loc[test_i, :].astype('int')
 
     X_train = train[X_LABELS]
     y_train = train[[TARGET_COLUMN_NAME]]
