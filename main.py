@@ -14,9 +14,6 @@ import lib.constants as constants
 app = FastAPI()
 
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
-
 templates = Jinja2Templates(directory="templates")
 
 
@@ -27,6 +24,14 @@ with gzip.open("model_pickle.gz", "rb") as f:
 with gzip.open("encoder_pickle.gz", "rb") as f:
     # Technically this a encoder/decoder since its a bidict
     encoder = pickle.load(f)
+
+
+def _get_actual_diagnostic_codes() -> List[str]:
+    result = []
+    for code in constants.DIAGNOSTIC_CODES:
+        if code in encoder:
+            result.append(code)
+    return result
 
 
 def return_med_prediction(diagnosis_list: List[str]) -> str:
@@ -57,7 +62,7 @@ def return_med_prediction(diagnosis_list: List[str]) -> str:
 async def get_main_page(request: Request):
     return templates.TemplateResponse(
         "main.html", {"request": request,
-                      "diag_codes": constants.DIAGNOSTIC_CODES}
+                      "diag_codes": _get_actual_diagnostic_codes()}
     )
 
 
@@ -67,7 +72,7 @@ async def post_main_page(request: Request):
     if form.get("num_codes") is None:
         return templates.TemplateResponse(
             "main.html", {"request": request,
-                          "diag_codes": constants.DIAGNOSTIC_CODES}
+                          "diag_codes": _get_actual_diagnostic_codes()}
         )
     num_codes = form.get("num_codes")
     submitted_diag_codes = []
