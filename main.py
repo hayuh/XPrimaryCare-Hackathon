@@ -18,10 +18,10 @@ templates = Jinja2Templates(directory="templates")
 
 
 # Getting the model.
-with gzip.open("model_pickle.gz", "rb") as f:
+with gzip.open("model_pickle2.gz", "rb") as f:
     model = pickle.load(f)
 
-with gzip.open("encoder_pickle.gz", "rb") as f:
+with gzip.open("encoder_pickle2.gz", "rb") as f:
     # Technically this a encoder/decoder since its a bidict
     encoder = pickle.load(f)
 

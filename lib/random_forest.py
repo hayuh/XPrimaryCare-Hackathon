@@ -28,6 +28,13 @@ y_original = df_original.loc[:, TARGET_COLUMN_NAME]
 # 0.387 which is slightly lower which is why I went with the kfold approach. (I thought the kfold
 # version would be a lot higher but the accuracy is low regardless lol)
 
+# This uses a lot of memory and its a ghetto option overall.
+# Options:
+#   1.  Use sklearn encoders such as one_hot_encoder. The issue with this is while it can efficiently encode strings as unique ints,
+#       I'm not totally sure how to map the ints back to strings.
+#   2.  Use a database (sqlite is simple) to do this encoding instead. Run time will be worse because it will be read/writing from disk
+#       but it will greatly reduce the memory which is what's bottlenecking us at the moment.
+
 encoding = bidict.bidict({None: 0})
 counter = 1
 for i in range(len(df)):
@@ -61,7 +68,7 @@ np.random.seed(seed)
 best_model = None
 max_accuracy = float('-inf')
 
-model = RandomForestClassifier(n_estimators=100, random_state=seed)
+model = RandomForestClassifier(n_estimators=64, max_depth=10, random_state=seed)
 for train_i, test_i in StratifiedKFold(n_splits=4, shuffle=True, random_state=seed).split(df_original, y_original):
     train, test = df.loc[train_i, :].astype(
         'int'), df.loc[test_i, :].astype('int')
