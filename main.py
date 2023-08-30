@@ -10,6 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 import lib.constants as constants
+import lib.random_forest as random_forest
 
 app = FastAPI()
 
@@ -17,13 +18,16 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
 
-# Getting the model.
-with gzip.open("model_pickle2.gz", "rb") as f:
-    model = pickle.load(f)
+# # Getting the model.
+# with gzip.open("model_pickle2.gz", "rb") as f:
+#     model = pickle.load(f)
 
-with gzip.open("encoder_pickle2.gz", "rb") as f:
-    # Technically this a encoder/decoder since its a bidict
-    encoder = pickle.load(f)
+# with gzip.open("encoder_pickle2.gz", "rb") as f:
+#     # Technically this a encoder/decoder since its a bidict
+#     encoder = pickle.load(f)
+
+
+model, encoder = random_forest.get_model_and_encoder()
 
 
 def _get_actual_diagnostic_codes() -> List[str]:
