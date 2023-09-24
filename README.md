@@ -10,6 +10,6 @@ Learn more about NextPill in this pitch deck: https://docs.google.com/presentati
 To run the tool, git clone this repository. Run "pip install -r requirements.txt" so you have all requirements locally. Run "uvicorn main:app --reload" to see the application deployed locally.
 
 Built Using:
-* Flask
+* FastAPI
 * Bootstrap
 * Random Forest
